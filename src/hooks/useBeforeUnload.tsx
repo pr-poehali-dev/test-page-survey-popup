@@ -31,14 +31,14 @@ const useBeforeUnload = ({
         onBeforeUnload();
       }
 
-      event.returnValue = message;
+      // Показываем наш кастомный диалог вместо стандартного браузерного
       event.preventDefault();
-      return message;
+      return true;
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [message, onBeforeUnload]);
+  }, [onBeforeUnload]);
 
   // Отслеживание попыток навигации
   useEffect(() => {

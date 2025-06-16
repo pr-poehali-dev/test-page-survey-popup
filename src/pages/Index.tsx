@@ -9,9 +9,9 @@ const Index = () => {
 
   useBeforeUnload({
     enabled: preventClose,
-    message: "Вы действительно хотите покинуть страницу?",
     onBeforeUnload: () => {
       console.log("Пользователь пытается закрыть браузер");
+      setShowSurveyDialog(true);
     },
     onNavigationAttempt: () => {
       console.log("Пользователь пытается навигацию");
