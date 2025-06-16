@@ -27,25 +27,44 @@ const useBeforeUnload = ({
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
       if (!enabledRef.current) return;
 
-      if (onBeforeUnload) {
+      // Стандартное поведение браузера - показать встроенный диалог
+      event.preventDefault();
+      event.returnValue = message;
+
+      // Вызываем колбэк для показа нашей модалки
+      // Но модалка покажется только если пользователь останется на странице
+      setTimeout(() => {
+        if (onBeforeUnload && enabledRef.current) {
+          onBeforeUnload();
+        }
+      }, 100);
+
+      return message;
+    };
+
+    const handleVisibilityChange = () => {
+      // Если страница становится скрытой и включена защита
+      if (document.hidden && enabledRef.current && onBeforeUnload) {
         onBeforeUnload();
       }
-
-      // Показываем наш кастомный диалог вместо стандартного браузерного
-      event.preventDefault();
-      return true;
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [onBeforeUnload]);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [onBeforeUnload, message]);
 
   // Отслеживание попыток навигации
   useEffect(() => {
     if (!enabled || !onNavigationAttempt) return;
 
-    const handlePopState = () => {
+    const handlePopState = (event: PopStateEvent) => {
       if (enabledRef.current) {
+        event.preventDefault();
         onNavigationAttempt();
         // Возвращаем пользователя обратно
         window.history.pushState(null, "", location.pathname);
