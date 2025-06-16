@@ -11,7 +11,11 @@ const Index = () => {
     enabled: preventClose,
     message: "Вы действительно хотите покинуть страницу?",
     onBeforeUnload: () => {
-      console.log("Пользователь пытается покинуть страницу");
+      console.log("Пользователь пытается закрыть браузер");
+    },
+    onNavigationAttempt: () => {
+      console.log("Пользователь пытается навигацию");
+      setShowSurveyDialog(true);
     },
   });
 
