@@ -5,8 +5,10 @@ import useBeforeUnload from "@/hooks/useBeforeUnload";
 
 const Index = () => {
   const [showSurveyDialog, setShowSurveyDialog] = useState(false);
+  const [preventClose, setPreventClose] = useState(false);
 
   useBeforeUnload({
+    enabled: preventClose,
     message: "Вы действительно хотите покинуть страницу?",
     onBeforeUnload: () => {
       console.log("Пользователь пытается покинуть страницу");
@@ -27,9 +29,16 @@ const Index = () => {
     setShowSurveyDialog(false);
   };
 
+  const togglePreventClose = () => {
+    setPreventClose(!preventClose);
+  };
+
   return (
     <>
-      <MinimalHero />
+      <MinimalHero
+        onTogglePreventClose={togglePreventClose}
+        preventClose={preventClose}
+      />
       <SurveyDialog
         open={showSurveyDialog}
         onClose={handleCloseDialog}

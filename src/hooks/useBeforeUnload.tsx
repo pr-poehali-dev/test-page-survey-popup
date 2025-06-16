@@ -1,42 +1,44 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 interface UseBeforeUnloadProps {
+  enabled?: boolean;
   onBeforeUnload?: () => void;
   message?: string;
 }
 
 const useBeforeUnload = ({
+  enabled = false,
   onBeforeUnload,
   message = "Вы уверены, что хотите покинуть страницу?",
 }: UseBeforeUnloadProps) => {
+  const enabledRef = useRef(enabled);
+
+  useEffect(() => {
+    enabledRef.current = enabled;
+  }, [enabled]);
+
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-      // Вызываем callback если он есть
+      if (!enabledRef.current) return;
+
       if (onBeforeUnload) {
         onBeforeUnload();
       }
 
-      // Современные браузеры требуют именно такой подход
+      // Устанавливаем returnValue для показа диалога
+      event.returnValue = message;
       event.preventDefault();
-      // Возвращаем пустую строку - браузер покажет стандартное сообщение
-      return (event.returnValue = "");
-    };
 
-    // Также добавляем обработчик для события pagehide
-    const handlePageHide = (event: PageTransitionEvent) => {
-      if (!event.persisted && onBeforeUnload) {
-        onBeforeUnload();
-      }
+      // Возвращаем сообщение для старых браузеров
+      return message;
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
-    window.addEventListener("pagehide", handlePageHide);
 
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
-      window.removeEventListener("pagehide", handlePageHide);
     };
-  }, [onBeforeUnload, message]);
+  }, [message, onBeforeUnload]);
 };
 
 export default useBeforeUnload;

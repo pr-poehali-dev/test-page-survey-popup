@@ -1,15 +1,32 @@
-const MinimalHero = () => {
+import { Button } from "@/components/ui/button";
+
+interface MinimalHeroProps {
+  onTogglePreventClose: () => void;
+  preventClose: boolean;
+}
+
+const MinimalHero = ({
+  onTogglePreventClose,
+  preventClose,
+}: MinimalHeroProps) => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white">
-      <div className="max-w-2xl mx-auto text-center px-6">
-        <h1 className="text-5xl font-light text-gray-900 mb-6 tracking-tight">
-          Простота
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="text-center">
+        <h1 className="text-4xl font-bold text-gray-900 mb-8">
+          Тест защиты от закрытия
         </h1>
-        <p className="text-xl text-gray-600 font-light leading-relaxed">
-          Минималистичный дизайн — это не отсутствие деталей,
-          <br />а присутствие только самого важного.
+        <Button
+          onClick={onTogglePreventClose}
+          variant={preventClose ? "destructive" : "default"}
+          size="lg"
+        >
+          {preventClose ? "Отключить защиту" : "Включить защиту от закрытия"}
+        </Button>
+        <p className="mt-4 text-sm text-gray-600">
+          {preventClose
+            ? "Попробуйте закрыть вкладку - появится предупреждение"
+            : "Нажмите кнопку, чтобы включить защиту"}
         </p>
-        <div className="mt-12 h-px bg-gray-200 w-24 mx-auto"></div>
       </div>
     </div>
   );
