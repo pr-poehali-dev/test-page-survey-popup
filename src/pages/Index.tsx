@@ -6,9 +6,10 @@ import useBeforeUnload from "@/hooks/useBeforeUnload";
 const Index = () => {
   const [showSurveyDialog, setShowSurveyDialog] = useState(false);
 
-  const { shouldShowDialog, setShouldShowDialog } = useBeforeUnload({
+  useBeforeUnload({
+    message: "Вы действительно хотите покинуть страницу?",
     onBeforeUnload: () => {
-      setShowSurveyDialog(true);
+      console.log("Пользователь пытается покинуть страницу");
     },
   });
 

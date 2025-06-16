@@ -1,18 +1,25 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 interface UseBeforeUnloadProps {
-  onBeforeUnload: () => void;
+  onBeforeUnload?: () => void;
+  message?: string;
 }
 
-const useBeforeUnload = ({ onBeforeUnload }: UseBeforeUnloadProps) => {
-  const [shouldShowDialog, setShouldShowDialog] = useState(false);
-
+const useBeforeUnload = ({
+  onBeforeUnload,
+  message = "Вы уверены, что хотите покинуть страницу?",
+}: UseBeforeUnloadProps) => {
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      // Вызываем callback если он есть
+      if (onBeforeUnload) {
+        onBeforeUnload();
+      }
+
+      // Предотвращаем закрытие и показываем предупреждение
       event.preventDefault();
-      setShouldShowDialog(true);
-      onBeforeUnload();
-      return "";
+      event.returnValue = message; // Для старых браузеров
+      return message; // Для современных браузеров
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
@@ -20,9 +27,7 @@ const useBeforeUnload = ({ onBeforeUnload }: UseBeforeUnloadProps) => {
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
-  }, [onBeforeUnload]);
-
-  return { shouldShowDialog, setShouldShowDialog };
+  }, [onBeforeUnload, message]);
 };
 
 export default useBeforeUnload;
